@@ -1,0 +1,6 @@
+# ARC_FILE: .gitignore
+.DS_Store
+out
+*.swp
+*.swo
+*~

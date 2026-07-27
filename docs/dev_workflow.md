@@ -33,6 +33,8 @@
    the summary with the reason it was rejected, so it isn't re-tried
    next session.
 
+7. **Commit is obligatory at close-out**
+
 ## Status vocabulary
 
 Use these words consistently in `TODO.md` and `project-summary.md` so

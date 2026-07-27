@@ -43,10 +43,13 @@ _arc_capture() {
 
     _arc_runtime_setup || return 1
 
+    local ts
+    ts=$(date '+%Y-%m-%d %H:%M:%S')
+
     if [[ "$mode" == "append" ]]; then
-        "$@" 2>&1 | tee -a "$CB"
+        { echo "===== $ts ====="; "$@"; } 2>&1 | tee -a "$CB"
     else
-        "$@" 2>&1 | tee "$CB"
+        { echo "===== $ts ====="; "$@"; } 2>&1 | tee "$CB"
     fi
 
     local command_status="${PIPESTATUS[0]}"
@@ -75,18 +78,17 @@ xoa() {
 }
 
 xoe() {
-    xo && vim "$CB"
+    xo && "${EDITOR:-nano}" "$CB"
 }
 
 xoae() {
-    xoa && vim "$CB"
+    xoa && "${EDITOR:-nano}" "$CB"
 }
 
 xed() {
     _arc_runtime_setup || return 1
-    vim "$CB"
+    "${EDITOR:-nano}" "$CB"
 }
-
 xcat() {
     _arc_runtime_setup || return 1
     cat "$CB"

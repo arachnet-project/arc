@@ -1,173 +1,130 @@
 # ARC_FILE: docs/project-summary.md
-
-# ARC project summary
+# arc — project summary
+# Created: 2026-07-27
+# Updated: 2026-11-01
 
 ## Purpose
 
-ARC is Jan Mura's personal Bash workflow toolkit. It provides short,
-screen-reader-friendly commands for clipboard handling, command-output
-capture, file transfer, deployment, Git operations, archive extraction,
-and Markdown conversion across macOS, Ubuntu, and an OCI server.
+ARC is Jan Mura's general-purpose personal Bash workflow toolkit. It
+provides short, screen-reader-friendly commands for clipboard handling,
+command-output capture, file transfer, deployment, Git operations,
+archive extraction, and Markdown conversion across macOS, Ubuntu, and an
+OCI server. ARC has its own repository and workflow.
 
 ## Repository
 
-`git@github.com:arachnet-project/arc.git`, branch `main`.
+- Remote: `git@github.com:arachnet-project/arc.git`
+- Branch: `main`
+- Latest verified feature/workflow commit: `81a26ae` — `feat: add repo
+  session-opening audit and workflow`
+- The commit was pushed from Ubuntu to `origin/main`. The push output
+  confirmed a clean Ubuntu working tree.
 
-Commits:
-- `9e9a2d8` — Initial commit (July 17, 2026)
-- `3f8067d` — docs: TODO, dev_workflow, howto, mobile-integration,
-  mobile-setup-howto, project-summary; feat: timestamp in `_arc_capture`;
-  chore: gitignore `wrk/session_plan.md` (July 27, 2026)
+The Ubuntu audit fetched `origin` before the push and reported zero
+local-only and zero upstream-only commits. The earlier MacBook audit
+reported the same base commit and tracked paths, but its working tree had
+a local change to `docs/dev_workflow.md`. The MacBook has not yet been
+confirmed synchronized to `81a26ae`.
 
-Both commits pushed and confirmed on `origin/main`.
+## Repository layout
 
-## Repository layout (as committed, confirmed via `ls -la` this session)
+The tracked project includes `aliases.sh`, `README.md`, the `docs/`
+project-control and user-guidance documents, and `wrk/commit.sh`,
+`wrk/pull.sh`, and `wrk/repo-session-open.sh`.
 
-```text
-arc/
-  .gitignore
-  aliases.sh
-  README.md
-  docs/
-    conventions.md
-    dev_workflow.md
-    howto.md
-    mobile-integration.md
-    mobile-setup-howto.md
-    project-summary.md
-    TODO.md
-  wrk/
-    commit.sh
-    pull.sh
-    session_plan.md   (gitignored — working scratch, lives in wrk/)
-```
+`wrk/session_plan.md` is not used as a shared plan and remains ignored by
+Git. The numbered next-session plan belongs in this summary; actionable
+work remains in `docs/TODO.md`.
 
-`wrk/out` and `wrk/session_plan.md` are both gitignored (bare `out`
-pattern matches at any depth; `wrk/session_plan.md` added explicitly
-this session).
+## Tools and configuration
 
-## Governance: `docs/dev_workflow.md` is now in force
+- `aliases.sh` is sourced after `PROJECT_ROOT` is exported. On Ubuntu,
+  `.bashrc` sets `PROJECT_ROOT="$HOME/project_embeddings"` and
+  `ARC_ROOT="$HOME/arc"`, then sources `$ARC_ROOT/aliases.sh`.
+- The same aliases file is intended for macOS and Ubuntu. macOS uses
+  `pbcopy`/`pbpaste`; Linux uses `xclip`.
+- The clipboard capture file and download/transformation directories live
+  under `~/.cb`. `xcom` and `xpull` capture their command output there.
+- `nano` is the selected editor; `EDITOR=nano` was confirmed and tested
+  through `xed` on macOS.
+- Ubuntu smoke tests confirmed aliases load, `xrun` captures timestamped
+  output, and `xdep` is defined.
+- `wrk/commit.sh` requires a commit message, supports explicit paths, and
+  pushes to the configured upstream. `wrk/pull.sh` requires a clean tree
+  and uses fast-forward-only pulling.
 
-Adopted this session as a strict, mandatory rule set (not guidance) —
-mirrors the discipline Jan already uses on the separate ACE project,
-adopted specifically to prevent the kind of drift/neglect problems
-experienced there. Six rules; status vocabulary is Proposed → Agreed →
-Applied → Tested → Committed. All work in this and future sessions
-should be tracked through that vocabulary explicitly.
+## Workflow and document policy
 
-## This session's work (all confirmed Tested/Committed)
+`docs/dev_workflow.md` now defines session opening and close-out. At
+session opening, read the workflow, this summary, and TODO; run
+`bash wrk/repo-session-open.sh --tracked-files`; review the local state;
+then use `xpull` before work if the tree is clean and the state is
+understood.
 
-1. **Root cause found for a stray duplicate file:** a root-level
-   `project-summary.md` (stale, July 20) existed alongside the correct
-   `docs/project-summary.md` (July 27) — found via `ls -la`, deleted.
-   Also removed `.DS_Store` and `aliases.sh.save` (a nano emergency-save
-   artifact) from the repo root — neither belonged in the working tree.
-2. **`_arc_capture` timestamp change** — applied and tested in both
-   `overwrite` and `append` modes. Each captured command's output in
-   `~/.cb/cb` now starts with `===== YYYY-MM-DD HH:MM:SS =====` via a
-   `{ echo "$ts"; "$@"; }` group wrapped before the `tee` pipe;
-   `PIPESTATUS[0]` still correctly reflects the real command's exit
-   code (the group's exit status is its last command's).
-3. **`EDITOR=nano` confirmed** in `.bash_profile` (line 35) — was
-   already Applied from a prior session, now also live-tested via
-   `xed`.
-4. **`wrk/commit.sh` on macOS reviewed line-by-line — confirmed
-   correct and canonical.** Matches the previously-documented
-   parameterized design: required `$1` with usage error, anti-footgun
-   check refusing an explicit path list when the index has staged
-   changes, `git add -A :/` vs per-path staging, auto-set-upstream on
-   push. The shebang-then-`ARC_FILE:`-marker-on-line-2 format is
-   correct per `_arc_marker_path`'s shebang handling — not a bug.
-5. **`wrk/pull.sh` on macOS reviewed — confirmed clean.** Requires a
-   fully clean working tree before pulling, uses `--ff-only` (no
-   surprise merge commits). No issues found.
-6. **`docs/howto.md` located** — it already existed on disk (July 17),
-   the "never recovered" concern from earlier in the session turned out
-   to be moot. Committed as-is.
-7. **`docs/session_plan.md` relocated to `wrk/session_plan.md`** and
-   gitignored — established as Jan's ongoing per-session scratch file,
-   not a versioned doc.
-8. **Full commit + push executed and verified** — `git log --oneline`
-   and `git show --stat HEAD` both confirm commit `3f8067d` on
-   `origin/main` with exactly the intended 8 files changed.
+Rule 8 states that no machine is primary: pull before a work block and
+commit/push before handing work to another machine. Close-out commits use
+`xcom` and must be verified on `origin/main`.
 
-## Open item: Ubuntu repository is in an inconsistent state (unresolved)
+The document metadata policy is: maintained documents carry `Created`
+and `Updated` dates; stable guidance documents carry a version; frequently
+changing `TODO.md` and `project-summary.md` do not. Their revisions are
+recorded by Git.
 
-`git status` on Ubuntu shows:
-```
-modified:   aliases.sh
-deleted:    commit.sh
-deleted:    pull.sh
-Untracked:  .gitignore, README.md, docs/, wrk/
-```
+This workflow governs ARC only.
 
-This means Git's index on Ubuntu currently believes `commit.sh` and
-`pull.sh` were tracked at the **repo root** (not inside `wrk/`) and are
-now gone from there, while `.gitignore`, `README.md`, `docs/`, and
-`wrk/` all show as untracked — inconsistent with a normal clone of the
-initial commit, which per this doc's history should already have all of
-those tracked. Root cause not yet diagnosed. Possible causes (not
-determined): wrong directory / not the expected clone, a corrupted or
-reset index, or a manual file move done outside Git — none of these
-individually explains every symptom, so no cause should be assumed yet.
+## Work completed this session
 
-**Do not commit or pull on Ubuntu until this is diagnosed.** A commit
-now risks accidentally committing a repo restructuring; a pull risks an
-unpredictable conflict or overwrite given the index's current state.
+1. Added `wrk/repo-session-open.sh`, a read-only repository audit. It
+   reports machine and repository identity, remotes, working-tree changes,
+   recent local history, top-level files, and optionally tracked paths.
+   It does not fetch or modify the repository. Ubuntu syntax checking and
+   execution with `--tracked-files` passed; a copy was also run on macOS.
+2. Added a formal session-opening procedure to `docs/dev_workflow.md` and
+   clarified the no-primary-machine handoff rule.
+3. Added document creation/update dates and versioning guidance. Stable
+   guidance documents receive versions; living trackers do not.
+4. Restored the `.gitignore` rule for `wrk/session_plan.md`. Ubuntu's
+   `git check-ignore -v --no-index` confirmed the match at `.gitignore`
+   line 4.
+5. Removed the obsolete untracked Ubuntu `wrk/status.sh`; its removal
+   required no Git change.
+6. Updated `docs/TODO.md` and pushed the reviewed work in commit
+   `81a26ae`.
 
-Ubuntu's `wrk/commit.sh` content itself **is** understood and is not
-part of this open item — it's the previously-documented simpler v2.0
-(`msg=$1`, plain `git add .`, no anti-footgun check, no usage-message-
-on-missing-arg), confirmed via direct `cat` this session. Once the
-structural index issue is resolved, the plan is to sync it via a normal
-`git pull`/`xpull` from `origin/main` (which now has the fuller,
-macOS-confirmed version) — not a manual file copy — since Git itself is
-the intended sync mechanism between machines.
+## Current status and unresolved history
 
-## Editor: resolved
-
-`nano` selected (`vim` broken on macOS due to a Homebrew/Perl mismatch;
-VS Code's `-w` ties to the whole app/window, not the document; BBEdit's
-window wouldn't close, root cause undiagnosed). `xoe`/`xoae`/`xed` use
-`"${EDITOR:-nano}"`. `EDITOR=nano` confirmed on line 35 of
-`.bash_profile` and live-tested.
-
-## Mobile integration
-
-iPhone SE: ED25519 SSH key generated inside Working Copy, GitHub OAuth
-completed, public key registered. Not yet started this session — carried
-over. See `docs/mobile-integration.md` and `docs/mobile-setup-howto.md`
-(both now committed).
-
-## Next session
-
-New topics Jan wants to open with, ahead of resuming iPhone SE work:
-- **Dictation on macOS** — interest in Whisper-based dictation features.
-- **Agentics discussion** — principles behind agent frameworks; a
-  specific claim about an Austrian originator and a subsequent
-  acquisition was raised but not yet verified — treat as a discussion
-  topic to research together, not an established fact.
-- **Pricing trends and related opportunities** — general discussion,
-  no specifics yet.
-
-Numbered plan:
-1. Diagnose the Ubuntu repository inconsistency (`git log --oneline
-   --all`, `git ls-files`, `git remote -v`, `pwd && git rev-parse
-   --show-toplevel` — gather these before acting on anything).
-2. Once diagnosed, bring Ubuntu in line with `origin/main` via a normal
-   `git pull`/`xpull` (not a manual copy), after confirming no
-   uncommitted local work would be lost.
-3. Open with the three new topics above (dictation/Whisper, agentics
-   principles, pricing/opportunities) as a discussion, likely before
-   returning to `arc` code.
-4. Resume iPhone SE setup: clone `arc` into Working Copy (read-only
-   test, open `README.md`), then Blink Shell/SSH setup for Ubuntu and
-   `ara`.
+- Ubuntu was clean after the push of `81a26ae`.
+- The MacBook still needs its local `docs/dev_workflow.md` change
+  reconciled with the pushed version, then `xpull` and a clean-state
+  check.
+- An earlier account described an Ubuntu checkout with expected files
+  untracked and Git helper files deleted. Later audits showed the expected
+  tracked paths on both machines. The cause of that earlier discrepancy
+  is unknown; no current structural mismatch was found.
+- The Ubuntu `.bashrc` `unexpected EOF` report around lines 76–77 remains
+  undiagnosed.
 
 ## Known limitations
 
-- `xdep` overwrites an existing destination without confirmation.
-- Archives should come from trusted sources.
-- Linux clipboard access requires `xclip` and a graphical clipboard
-  session.
-- PDF/format conversion requires Pandoc and a suitable engine for `xmd`.
+- `xdep` replaces an existing destination without prompting.
+- Linux clipboard commands require `xclip` and an available graphical
+  clipboard session.
+- Archive extraction should be limited to trusted files.
+- Markdown conversion with `xmd` requires Pandoc and a suitable output
+  engine for the requested format.
+- The iPhone SE setup is incomplete. The ED25519 key was generated in
+  Working Copy, GitHub OAuth was completed, and the public key was
+  registered; the Working Copy clone test and Blink Shell/SSH setup remain.
+
+## Next-session plan
+
+1. Complete the MacBook synchronization: preserve and inspect its local
+   workflow diff, confirm the pushed file includes its intended content,
+   restore only the redundant local edit, run `xpull`, and verify the
+   latest commit and clean tree.
+2. Define ARC's agent supervision principles: allowed inspection, scoped
+   edits and tests, review points, and commit/push authority.
+3. Apply the approved metadata scheme to the remaining maintained
+   documents, updating dates and adding versions only where appropriate.
+4. Resume iPhone SE setup after the agent workflow work: Working Copy
+   clone/test, then Blink Shell/SSH setup for Ubuntu and `ara`.

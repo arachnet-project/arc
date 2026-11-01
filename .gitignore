@@ -1,7 +1,7 @@
 # ARC_FILE: .gitignore
 .DS_Store
 out
+wrk/session_plan.md
 *.swp
 *.swo
 *~
-wrk/session_plan.md
